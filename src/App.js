@@ -49,6 +49,7 @@ export default function App() {
   return (
     <>
       <Navbar />
+      <Main />
     </>
   );
 }
@@ -69,5 +70,29 @@ function Navbar() {
         Found <strong>{tempMovieData.length}</strong> results
       </p>
     </nav>
+  );
+}
+
+function Main() {
+  return (
+    <main className="main">
+      <div className="box">
+        <button className="btn-toggle">-</button>
+        <ul className="list">
+          {tempMovieData?.map((movie) => (
+            <li key={movie.imdbID}>
+              <img src={movie.Poster} alt={`${movie.Title} poster`}></img>
+              <h3>{movie.Title}</h3>
+              <div>
+                <p>
+                  <span>📅</span>
+                  <span>{movie.Year}</span>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </main>
   );
 }
