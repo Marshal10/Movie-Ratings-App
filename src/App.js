@@ -103,20 +103,14 @@ function Main() {
               <span>#️⃣</span>
               <span>{tempWatchedData.length}</span>
             </p>
-          </div>
-          <div>
             <p>
               <span>⭐</span>
               <span>8</span>
             </p>
-          </div>
-          <div>
             <p>
               <span>🌟</span>
               <span>10</span>
             </p>
-          </div>
-          <div>
             <p>
               <span>⌛</span>
               <span>132 min</span>
