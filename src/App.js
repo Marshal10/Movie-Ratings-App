@@ -66,7 +66,7 @@ function Navbar() {
         className="search"
         placeholder="Search Movies..."
       ></input>
-      <p className="numResults">
+      <p className="num-results">
         Found <strong>{tempMovieData.length}</strong> results
       </p>
     </nav>
