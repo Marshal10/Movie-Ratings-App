@@ -101,16 +101,7 @@ function Main() {
         {isOpen && (
           <ul className="list">
             {movies?.map((movie) => (
-              <li key={movie.imdbID}>
-                <img src={movie.Poster} alt={`${movie.Title} poster`}></img>
-                <h3>{movie.Title}</h3>
-                <div>
-                  <p>
-                    <span>📅</span>
-                    <span>{movie.Year}</span>
-                  </p>
-                </div>
-              </li>
+              <Movie movie={movie} key={movie.imdbID} />
             ))}
           </ul>
         )}
@@ -146,29 +137,50 @@ function Main() {
 
             <ul className="list">
               {watched.map((movie) => (
-                <li key={movie.imdbID}>
-                  <img src={movie.Poster} alt={`${movie.Title} poster`}></img>
-                  <h3>{movie.Title}</h3>
-                  <div>
-                    <p>
-                      <span>⭐</span>
-                      <span>{movie.imdbRating}</span>
-                    </p>
-                    <p>
-                      <span>🌟</span>
-                      <span>{movie.userRating}</span>
-                    </p>
-                    <p>
-                      <span>⌛</span>
-                      <span>{movie.runtime} min</span>
-                    </p>
-                  </div>
-                </li>
+                <WatchedMovie movie={movie} key={movie.imdbID} />
               ))}
             </ul>
           </>
         )}
       </div>
     </main>
+  );
+}
+
+function Movie({ movie }) {
+  return (
+    <li>
+      <img src={movie.Poster} alt={`${movie.Title} poster`}></img>
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>📅</span>
+          <span>{movie.Year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function WatchedMovie({ movie }) {
+  return (
+    <li>
+      <img src={movie.Poster} alt={`${movie.Title} poster`}></img>
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>⭐</span>
+          <span>{movie.imdbRating}</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>{movie.userRating}</span>
+        </p>
+        <p>
+          <span>⌛</span>
+          <span>{movie.runtime} min</span>
+        </p>
+      </div>
+    </li>
   );
 }
