@@ -61,24 +61,42 @@ export default function App() {
 }
 
 function Navbar() {
-  const [query, setQuery] = useState("");
   return (
     <nav className="nav-bar">
-      <div className="logo">
-        <span role="img">🍿</span>
-        <h1>usePopcorn</h1>
-      </div>
-      <input
-        type="text"
-        className="search"
-        placeholder="Search Movies..."
-        value={query}
-        onChange={(e) => setQuery((q) => e.target.value)}
-      ></input>
-      <p className="num-results">
-        Found <strong>{tempMovieData.length}</strong> results
-      </p>
+      <Logo />
+      <Search />
+      <NumResults />
     </nav>
+  );
+}
+
+function Logo() {
+  return (
+    <div className="logo">
+      <span role="img">🍿</span>
+      <h1>usePopcorn</h1>
+    </div>
+  );
+}
+
+function Search() {
+  const [query, setQuery] = useState("");
+  return (
+    <input
+      type="text"
+      className="search"
+      placeholder="Search Movies..."
+      value={query}
+      onChange={(e) => setQuery((q) => e.target.value)}
+    ></input>
+  );
+}
+
+function NumResults() {
+  return (
+    <p className="num-results">
+      Found <strong>{tempMovieData.length}</strong> results
+    </p>
   );
 }
 
