@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const apiKey = "5c3c075b";
 
 const tempMovieData = [
   {
@@ -52,8 +54,21 @@ const average = (arr) => {
 };
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
+  const query = "Space";
+
+  useEffect(function () {
+    async function searchMovie() {
+      const res = await fetch(
+        `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`
+      );
+      const data = await res.json();
+      console.log(data);
+      setMovies(data.Search);
+    }
+    searchMovie();
+  }, []);
 
   return (
     <>
