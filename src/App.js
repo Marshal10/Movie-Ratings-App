@@ -56,36 +56,62 @@ const average = (arr) => {
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
-  const query = "Space";
+  const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(function () {
-    async function searchMovie() {
-      const res = await fetch(
-        `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`
-      );
-      const data = await res.json();
-      console.log(data);
-      setMovies(data.Search);
-    }
-    searchMovie();
-  }, []);
+  useEffect(
+    function () {
+      async function searchMovie() {
+        setIsLoading(true);
+        const res = await fetch(
+          `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`
+        );
+        const data = await res.json();
+        console.log(data);
+        setMovies(data.Search);
+        setIsLoading(false);
+      }
+
+      if (query.length >= 3) {
+        searchMovie();
+      }
+    },
+    [query]
+  );
 
   return (
     <>
       <Navbar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
       <Main>
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
         <Box>
           <WatchedSummary watched={watched} />
           <MovieWatchList watched={watched} />
         </Box>
       </Main>
     </>
+  );
+}
+
+function Loader() {
+  return (
+    <div class="loader">
+      <p class="text">
+        <span class="letter letter1">L</span>
+        <span class="letter letter2">o</span>
+        <span class="letter letter3">a</span>
+        <span class="letter letter4">d</span>
+        <span class="letter letter5">i</span>
+        <span class="letter letter6">n</span>
+        <span class="letter letter7">g</span>
+        <span class="letter letter8">.</span>
+        <span class="letter letter9">.</span>
+        <span class="letter letter10">.</span>
+      </p>
+    </div>
   );
 }
 
@@ -107,8 +133,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       type="text"
