@@ -2,30 +2,6 @@ import { useEffect, useState } from "react";
 
 const apiKey = "5c3c075b";
 
-const tempMovieData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt0133093",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt6751668",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-  },
-];
-
 const tempWatchedData = [
   {
     imdbID: "tt1375666",
@@ -58,23 +34,45 @@ export default function App() {
   const [watched, setWatched] = useState(tempWatchedData);
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(
     function () {
+      const controller = new AbortController();
       async function searchMovie() {
-        setIsLoading(true);
-        const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`
-        );
-        const data = await res.json();
-        console.log(data);
-        setMovies(data.Search);
-        setIsLoading(false);
+        try {
+          setIsLoading(true);
+          setError("");
+          const res = await fetch(
+            `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`,
+            { signal: controller.signal }
+          );
+
+          if (!res.ok) {
+            throw new Error("Something went wrong with fetching movies");
+          }
+          const data = await res.json();
+          console.log(data);
+          if (data.Response === "False") throw new Error("Movie not found");
+
+          setMovies(data.Search);
+        } catch (err) {
+          if (err.name !== "AbortError") setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
 
-      if (query.length >= 3) {
-        searchMovie();
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
       }
+      searchMovie();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -86,7 +84,11 @@ export default function App() {
         <NumResults movies={movies} />
       </Navbar>
       <Main>
-        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
+        </Box>
         <Box>
           <WatchedSummary watched={watched} />
           <MovieWatchList watched={watched} />
@@ -98,20 +100,29 @@ export default function App() {
 
 function Loader() {
   return (
-    <div class="loader">
-      <p class="text">
-        <span class="letter letter1">L</span>
-        <span class="letter letter2">o</span>
-        <span class="letter letter3">a</span>
-        <span class="letter letter4">d</span>
-        <span class="letter letter5">i</span>
-        <span class="letter letter6">n</span>
-        <span class="letter letter7">g</span>
-        <span class="letter letter8">.</span>
-        <span class="letter letter9">.</span>
-        <span class="letter letter10">.</span>
+    <div className="loader">
+      <p className="text">
+        <span className="letter letter1">L</span>
+        <span className="letter letter2">o</span>
+        <span className="letter letter3">a</span>
+        <span className="letter letter4">d</span>
+        <span className="letter letter5">i</span>
+        <span className="letter letter6">n</span>
+        <span className="letter letter7">g</span>
+        <span className="letter letter8">.</span>
+        <span className="letter letter9">.</span>
+        <span className="letter letter10">.</span>
       </p>
     </div>
+  );
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔</span>
+      {message}
+    </p>
   );
 }
 
