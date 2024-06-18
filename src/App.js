@@ -8,7 +8,10 @@ const average = (arr) => {
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +35,13 @@ export default function App() {
 
   useEffect(
     function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
+
+  useEffect(
+    function () {
       const controller = new AbortController();
       handleCloseMovie();
       async function searchMovie() {
@@ -47,7 +57,7 @@ export default function App() {
             throw new Error("Something went wrong with fetching movies");
           }
           const data = await res.json();
-          console.log(data);
+
           if (data.Response === "False") throw new Error("Movie not found");
 
           setMovies(data.Search);
@@ -361,7 +371,6 @@ function MovieDetails({
         const data = await res.json();
         setMovie(data);
         setIsLoading(false);
-        console.log(data);
       }
       getMovieDetails();
     },
